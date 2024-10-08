@@ -31,6 +31,21 @@ fn selection_sort(array: []u32) void {
         std.mem.swap(u32, &array[min_idx], &array[i]);
     }
 }
+fn shell_sort(array: []u32) void {
+    const n = array.len;
+    if (n == 0) return;
+    var h: usize = 1;
+    while (h < n / 3) : (h = 3 * h + 1) {}
+    while (h >= 1) : (h /= 3) {
+        var i: usize = h;
+        while (i < n) : (i += h) {
+            var j = i;
+            while (j >= h and array[j - h] > array[j]) : (j -= h) {
+                std.mem.swap(u32, &array[j], &array[j - h]);
+            }
+        }
+    }
+}
 fn quick_sort(array: []u32) void {
     _ = array;
 }
@@ -46,6 +61,10 @@ test "sort trivial array" {
     trivial_array = [_]u32{};
     insertion_sort(&trivial_array);
     try std.testing.expect(trivial_array.len == 0);
+
+    trivial_array = [_]u32{};
+    shell_sort(&trivial_array);
+    try std.testing.expect(trivial_array.len == 0);
 }
 
 test "two element array" {
@@ -55,6 +74,10 @@ test "two element array" {
 
     array = [_]u32{ 2, 0 };
     insertion_sort(&array);
+    try std.testing.expectEqualSlices(u32, &[_]u32{ 0, 2 }, &array);
+
+    array = [_]u32{ 2, 0 };
+    shell_sort(&array);
     try std.testing.expectEqualSlices(u32, &[_]u32{ 0, 2 }, &array);
 }
 
@@ -66,6 +89,10 @@ test "three element array" {
     array = [_]u32{ 90, 32, 29 };
     insertion_sort(&array);
     try std.testing.expectEqualSlices(u32, &[_]u32{ 29, 32, 90 }, &array);
+
+    array = [_]u32{ 90, 32, 29 };
+    shell_sort(&array);
+    try std.testing.expectEqualSlices(u32, &[_]u32{ 29, 32, 90 }, &array);
 }
 
 test "five element array" {
@@ -76,6 +103,10 @@ test "five element array" {
     array = [_]u32{ 90, 32, 2, 19, 29 };
     insertion_sort(&array);
     try std.testing.expectEqualSlices(u32, &[_]u32{ 2, 19, 29, 32, 90 }, &array);
+
+    array = [_]u32{ 90, 32, 2, 19, 29 };
+    shell_sort(&array);
+    try std.testing.expectEqualSlices(u32, &[_]u32{ 2, 19, 29, 32, 90 }, &array);
 }
 
 test "duplicates in array" {
@@ -85,6 +116,10 @@ test "duplicates in array" {
 
     array = [_]u32{ 1, 1, 2, 2, 2, 3, 1, 1, 0 };
     insertion_sort(&array);
+    try std.testing.expectEqualSlices(u32, &[_]u32{ 0, 1, 1, 1, 1, 2, 2, 2, 3 }, &array);
+
+    array = [_]u32{ 1, 1, 2, 2, 2, 3, 1, 1, 0 };
+    shell_sort(&array);
     try std.testing.expectEqualSlices(u32, &[_]u32{ 0, 1, 1, 1, 1, 2, 2, 2, 3 }, &array);
 }
 // Can't really test stability using just U32 values
