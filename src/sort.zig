@@ -13,9 +13,11 @@ fn insertion_sort(array: []u32) void {
     var i: usize = 1;
     while (i < n) : (i += 1) {
         var j = i;
-        while (j > 0 and array[j - 1] > array[j]) : (j -= 1) {
-            std.mem.swap(u32, &array[j], &array[j - 1]);
+        const tmp = array[j];
+        while (j > 0 and array[j - 1] > tmp) : (j -= 1) {
+            array[j] = array[j - 1];
         }
+        array[j] = tmp;
     }
 }
 fn selection_sort(array: []u32) void {
