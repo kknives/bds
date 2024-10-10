@@ -76,10 +76,6 @@ fn in_place_merge(array: []u32, left: usize, mid: usize, right: usize) void {
             }
         };
         const insert_pos = std.sort.upperBound(u32, tmp, array[j + 1 .. right + 1], {}, S.lower_u32);
-        // if (insert_pos == array[j + 1 ..].len) {
-        //     std.debug.print("LowerBound reached end of array. Val: {}\n", .{tmp});
-        //     // insert_pos = array.len - 1;
-        // }
         var k = j;
         while (k < j + insert_pos) : (k += 1) {
             array[k] = array[k + 1];
