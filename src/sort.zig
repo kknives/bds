@@ -7,6 +7,11 @@ fn sort2(array: [2]u32) void {
     if (array[0] < array[1]) return;
     std.mem.swap(u32, array[0], array[1]);
 }
+// The main idea is to compare one element against all the elements before it,
+// keep comparing till the inversions keep coming, keep shifting the elements
+// towards the right. When the inversions stop, the shifting will have created
+// a space for the element to be placed there. Place the element there.
+// Repeat this process for all elements in this array.
 fn insertion_sort(array: []u32) void {
     const n = array.len;
     if (n == 0) return;
@@ -33,6 +38,9 @@ fn selection_sort(array: []u32) void {
         std.mem.swap(u32, &array[min_idx], &array[i]);
     }
 }
+// Sort subarrays based on the initial array. Each subarray contains elements
+// located a geometrically decreasing distance away. The sorting is a usual
+// insertion sort.
 fn shell_sort(array: []u32) void {
     const n = array.len;
     if (n == 0) return;
