@@ -41,3 +41,27 @@ test "reverse a 3 element list" {
         counter -= 1;
     }
 }
+test "reverse a 5 element list" {
+    const L = std.SinglyLinkedList(u8);
+    var list = L{};
+    var node1 = L.Node{ .data = 1 };
+    var node2 = L.Node{ .data = 2 };
+    var node3 = L.Node{ .data = 3 };
+    var node4 = L.Node{ .data = 4 };
+    var node5 = L.Node{ .data = 5 };
+    node1.next = &node2;
+    node2.next = &node3;
+    node3.next = &node4;
+    node4.next = &node5;
+    list.first = &node1;
+
+    try std.testing.expectEqual(list.len(), 5);
+    const reply = reverse(u8, &list);
+    try std.testing.expectEqual(reply.len(), 5);
+    var it = reply.first;
+    var counter: u8 = 5;
+    while (it) |node| : (it = node.next) {
+        try std.testing.expectEqual(node.data, counter);
+        counter -= 1;
+    }
+}
