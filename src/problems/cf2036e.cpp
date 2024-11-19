@@ -1,75 +1,92 @@
 #include <algorithm>
 #include <bits/stdc++.h>
 using namespace std;
-// int index_lbound(vector<int> const& index, vector<int> const & val, int n, int obj) {
-//   int low = 0, highjjjjjjjjjjjj
-// }
+using ll = long long;
+ll index_lbound(const int* index, vector<ll> const & val, ll n, ll obj) {
+  ll count = n, step = 0, i = 0, first = 0;
+  while (count > 0) {
+    i = first;
+    step = count >> 1;
+    i += step;
+    if (val[index[i]] <= obj) {
+      first = i + 1;
+      count -= step + 1;
+    } else count = step;
+  }
+  return first;
+}
 int main() {
-  int n, k, q;
+  ll n, k, q;
   cin >> n >> k >> q;
-  vector<vector<int>> regions(k, vector<int>(n, 0));
-  for (int i = 0; i < n; i++) {
-    for (int j = 0; j < k; j++) {
+  vector<vector<ll>> regions(k, vector<ll>(n, 0));
+  for (ll i = 0; i < n; i++) {
+    for (ll j = 0; j < k; j++) {
       cin >> regions[j][i];
     }
   }
 
-  for (int i = 0; i < k; i++) {
-    for (int j = 1; j < n; j++) regions[i][j] |= regions[i][j-1];
+  for (ll i = 0; i < k; i++) {
+    for (ll j = 1; j < n; j++) regions[i][j] |= regions[i][j-1];
   }
 
-  vector<vector<int>> index(k, vector<int>(n, 0));
-  for (int j = 0; j < n; j++) {
+  int** index = static_cast<int**>(calloc(n*k, sizeof(ll)));
+  // vector<vector<ll>> index(k, vector<ll>(n, 0));
+  for (ll j = 0; j < n; j++) {
     index[0][j] = j;
   }
-  for (int i = 1; i < k; i++)
-    copy(index[0].begin(), index[0].end(), index[i].begin());
+  // for (ll i = 1; i < k; i++)
+  //   copy(index[0].begin(), index[0].end(), index[i].begin());
 
-  for (int i = 0; i < k; i++) {
-    sort(index[i].begin(), index[i].end(), [&regions, i](int a, int b) {
+  for (ll i = 0; i < 1; i++) {
+    sort(index[i], index[i]+n, [&regions, i, n](ll a, ll b) {
+         if (a >= n or b >= n) {
+           cout << a << ", " << b << '\n';
+           return false;
+         }
            return regions[i][a] <= regions[i][b];
        });
   }
 
   while (q--) {
-    int bef = 0, aft = n;
-    int conds; cin >> conds;
+    ll bef = 0, aft = n;
+    bool done = false;
+    ll conds, reg; cin >> conds;
     while (conds--) {
-      int reg, val; char c;
+      ll val; char c;
       cin >> reg >> c >> val;
-      if (bef >= aft) continue;
-      reg -=1;
-      int low, up;
+      if (bef >= aft) {
+         done = true;
+         continue;
+      }
+      reg -= 1;
+      ll low, up;
 
       if (c == '>') {
-        auto ref = lower_bound(index[reg].begin(), index[reg].end(), val, [&regions, reg](int a, int b) {
-                                 return a <= regions[reg][b];
-                               });
-          low = 0;
-          up = distance(index[reg].begin(), ref);
-        
+        ll ref = index_lbound(index[reg], regions[reg], n, val);
+        low = ref;
+        up = n;
+        // cout << c << "| ref: " << ref << "| [" << low << "," << up << ")" << '\n';
       }      
       else {
-        auto ref = upper_bound(index[reg].begin(), index[reg].end(), val, [&regions, reg](int a, int b) {
-                                 return a <= regions[reg][b];
-                               });
-          low = distance(index[reg].begin(), ref);
-          up = n;
+        ll ref = index_lbound(index[reg], regions[reg], n, val);
+        low = 0;
+        up = ref;
+        // cout << c << "| ref: " << ref << "| [" << low << "," << up << ")" << '\n';
       }
 
       if (low >= up) {
-        bef = aft;
+        done = true;
         continue;
       }
 
       if (low >= aft or bef >= up) {
-        bef = aft;
+        done = true;
         continue;
       }
-      bef = min(bef, low);
+      bef = max(bef, low);
       aft = min(aft, up);
     }    
-    if (bef >= aft) cout << "-1" << '\n';
-    else cout << bef+1 << '\n';
+    if (done) cout << "-1" << '\n';
+    else cout << bef + 1 << '\n';
   }
 }
