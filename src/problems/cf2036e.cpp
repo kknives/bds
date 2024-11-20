@@ -9,19 +9,43 @@ int cmp(const void* a, const void* b) {
   return regions[glob_i][*(ll*)a] - regions[glob_i][*(ll*)b];
   // return ((*glob_regions)[*(ll*)a]) <= ((*glob_regions)[*(ll*)b]);
 }
-ll index_lbound(const ll* index, vector<ll> const & val, ll n, ll obj) {
-  ll count = n, step = 0, i = 0, first = 0;
-  while (count > 0) {
-    i = first;
-    step = count >> 1;
-    i += step;
-    if (val[index[i]] <= obj) {
-      first = i + 1;
-      count -= step + 1;
-    } else count = step;
+ll index_ubound(const ll* index, vector<ll> const& val, ll n, ll obj) {
+  ll l = -1, r = n;
+  while (r-l > 1) {
+    ll m = (l+r) >> 1;
+    if (obj < val[index[m]]) {
+      r = m;
+    } else {
+      l = m;
+    }
   }
-  return first;
+  return r;
 }
+ll index_lbound(const ll* index, vector<ll> const& val, ll n, ll obj) {
+  ll l = -1, r = n;
+  while (r-l > 1) {
+    ll m = (l+r) >> 1;
+    if (obj < val[index[m]]) {
+      r = m;
+    } else {
+      l = m;
+    }
+  }
+  return l;
+}
+// ll index_lbound(const ll* index, vector<ll> const & val, ll n, ll obj) {
+//   ll count = n, step = 0, i = 0, first = 0;
+//   while (count > 0) {
+//     i = first;
+//     step = count >> 1;
+//     i += step;
+//     if (val[index[i]] <= obj) {
+//       first = i + 1;
+//       count -= step + 1;
+//     } else count = step;
+//   }
+//   return first;
+// }
 int main() {
   ll n, k, q;
   cin >> n >> k >> q;
@@ -67,15 +91,18 @@ int main() {
       ll low, up;
 
       if (c == '>') {
-        ll ref = index_lbound(&index[idx(0,reg,n)], regions[reg], n, val);
-        low = ref;
+        ll ref = index_ubound(&index[idx(0,reg,n)], regions[reg], n, val);
+        low = index[idx(ref, reg, n)];
         up = n;
         cout << c << "| ref: " << ref << "| [" << low << "," << up << ")" << '\n';
       }      
       else {
         ll ref = index_lbound(&index[idx(0,reg,n)], regions[reg], n, val);
+        // cout << "Before loop: " << ref << '\n';
+        while(ref < n and regions[reg][index[idx(ref+1, reg, n)]] != n) ref++;
+        // if (regions[reg][index[idx(ref, reg, n)]] != val) ref+=1;
         low = 0;
-        up = ref;
+        up = index[idx(ref-1, reg, n)];
         cout << c << "| ref: " << ref << "| [" << low << "," << up << ")" << '\n';
       }
 
