@@ -72,7 +72,7 @@ int main() {
       }
       i = j;
     }
-    printf("%" PRIu64"\n", max_money);
+    printf("%jd\n", max_money);
     events.clear();
   }
 }
